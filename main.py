@@ -10,7 +10,7 @@ import argparse
 
 def main():
 
-    simulator = Simulator(20000, 4, 20, 0.1, False)
+    simulator = Simulator(100000, 100, 100, 1)
     
     print simulator.get_latest_stats()
     

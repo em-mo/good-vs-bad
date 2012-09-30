@@ -12,14 +12,17 @@ from random import seed, sample, randint
 class Simulator:
     
     def __init__(self, no_empty_peers, no_good_peers, no_bad_peers,
-                 test_probablility, always_test):
+                 test_probability):
         
-        self.test_probablility = test_probablility
-        self.always_test = always_test
+        self.test_probability = test_probability
+        if test_probability == 1:
+            self.always_test = True
+        else:
+            self.always_test = False
         
         self.empty_peers = list()
-        self.good_peers = list()
-        self.bad_peers = list()
+        self.good_peers = no_good_peers
+        self.bad_peers = no_bad_peers
         self.data_peers = list()
         self.uploading_peers = list()
         self.working_peers = list()
@@ -32,17 +35,16 @@ class Simulator:
         
         for i in range(no_empty_peers):
             self.empty_peers.append(Peer(ShareFile('empty'), 
-                                         test_probablility))
+                                         test_probability))
         
         for i in range(no_good_peers):
-            self.good_peers.append(Peer(ShareFile('good'),
-                                        test_probablility))
+            self.data_peers.append(Peer(ShareFile('good'),
+                                        test_probability))
             
         for i in range(no_bad_peers):
-            self.bad_peers.append(Peer(ShareFile('bad'),
-                                  test_probablility))
+            self.data_peers.append(Peer(ShareFile('bad'),
+                                  test_probability))
 
-        self.data_peers = self.good_peers + self.bad_peers
         return
         
     #~ ## Returns True when there are peers left without a file
@@ -84,7 +86,7 @@ class Simulator:
         
     def do_step(self):
         if self.empty_peers:
-            self.time = self.time + 1
+            self.time += 1
             
             self.working_peers = list()
             self.corrupted_peers = list ()
@@ -99,8 +101,8 @@ class Simulator:
                     self.working_peers.append(uploader)
                 else:
                     self.empty_peers.append(uploader)
-                    self.bad_peers.remove(uploader)
-            
+                    self.bad_peers -= 1
+                    
             self.data_peers.extend(self.working_peers)
             self.empty_peers.extend(self.corrupted_peers)
 
@@ -117,17 +119,17 @@ class Simulator:
         if downloader.test_data() or self.always_test:
             self.working_peers.append(downloader)
             if downloader.data.content == 'bad':
-                self.bad_peers.append(downloader)
+                self.bad_peers += 1
             else:
-                self.good_peers.append(downloader)
+                self.good_peers += 1
         else:
             self.corrupted_peers.append(downloader)
         return
                 
             
     def count_peer_types(self):
-        return dict(good=len(self.good_peers),
-                    bad=len(self.bad_peers),
+        return dict(good=self.good_peers,
+                    bad=self.bad_peers,
                     empty=len(self.empty_peers))
                 
     def get_random_peer(self, peers):
