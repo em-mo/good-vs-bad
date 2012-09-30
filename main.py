@@ -6,12 +6,19 @@
 #  Copyright 2012 Emil <emil@emil-luftbunt>
 #  
 from simulator import Simulator
-import sys
+import argparse
+
 def main():
-    sys.argv[1]
-	simulator = Simulator(
-	return 0
+
+    simulator = Simulator(20000, 4, 20, 0.1, False)
+    
+    print simulator.get_latest_stats()
+    
+    while simulator.do_step():
+        print simulator.get_latest_stats()
+    
+    return 0
 
 if __name__ == '__main__':
-	main()
+    main()
 

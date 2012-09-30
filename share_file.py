@@ -6,11 +6,15 @@
 #  Copyright 2012 Emil <emil@emil-luftbunt>
 #  
 
+file_types = frozenset(['good', 'bad', 'empty'])
+
 class ShareFile:
-    file_types = frozenset('good', 'bad')
     
     def __init__(self, content):
-        if content not in file_types: raise AssertionError
+        
+        assert content in file_types
         
         self.content = content
+        
+        return
         
