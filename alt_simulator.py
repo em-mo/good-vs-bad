@@ -12,11 +12,14 @@ class AltSimulator:
     def __init__(self, no_empty_peers, no_good_peers, no_bad_peers,
                  test_probability):
         self.test_probability = test_probability
+        ## If we always test, don't test when downloaded
         if test_probability == 1:
             self.always_test = True
         else:
             self.always_test = False
         
+        ## Bad peers knowingly distributes bad data
+        ## Corrupt peers distributes bad data by mistake
         self.empty_peers = no_empty_peers
         self.good_peers = no_good_peers
         self.bad_peers = no_bad_peers
@@ -29,23 +32,28 @@ class AltSimulator:
         self.time = 0
         self.stats = {self.time:{'good':no_good_peers, 
                                  'bad':no_bad_peers,
-                                 'empty':no_empty_peers,
-                                 'corrupt':0}}
-        
-
+                                 'empty':no_empty_peers}}
         return
-        
+    
+    def run(self):
+        while self.do_step():
+            None
+
+    ## Does one download cycle
     def do_step(self):
+        ## If no more empty_peers, stop
         if self.empty_peers:
             self.time += 1
             
             self.cleared_peers = 0
             self.working_peers = 0
+            # For the random selection of uploading peer
             no_good = self.good_peers
             no_bad = self.bad_peers
             no_corrupt = self.corrupt_peers
 
             while self.empty_peers and self.data_peers:
+                ## Select uploader
                 peer = self.get_random_peer(no_good, no_bad, no_corrupt)
 
                 if peer == 'good':
@@ -65,7 +73,7 @@ class AltSimulator:
                 else:
                     self.inc_corrupt()
                     no_bad -= 1
-                
+            
             self.data_peers += self.working_peers
             self.empty_peers += self.cleared_peers
             
@@ -84,7 +92,8 @@ class AltSimulator:
             return 'corrupt'
         else:
             return 'bad'
-            
+    
+    # Returns true if the data was tested and found contaminated
     def data_test(self):
         if random() < self.test_probability:
             return True
@@ -119,9 +128,8 @@ class AltSimulator:
 
     def count_peer_types(self):
         return dict(good=self.good_peers,
-                    bad=self.bad_peers,
-                    empty=self.empty_peers,
-                    corrupt=self.corrupt_peers)
+                    bad=self.bad_peers + self.corrupt_peers,
+                    empty=self.empty_peers)
         
     def get_latest_stats(self):
         return self.stats[self.time]

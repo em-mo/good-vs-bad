@@ -7,7 +7,7 @@
 #  
 from peer import Peer
 from share_file import ShareFile
-from random import seed, sample, randint
+from random import randint
 
 class Simulator:
     
@@ -47,42 +47,6 @@ class Simulator:
 
         return
         
-    #~ ## Returns True when there are peers left without a file
-    #~ def do_step():
-        #~ if self.empty_peers:
-            #~ self.time = self.time + 1
-            #~ no_empty = len(self.empty_peers)
-            #~ 
-            #~ if no_empty < len(data_peers):
-                #~ uploaders = sample(self.data_peers, no_empty)
-                #~ 
-                #~ for peer in uploaders:
-                    #~ start_download(peer)
-                #~ 
-            #~ else
-                #~ for peer in self.data_peers:
-                    #~ start_download(peer)
-            #~ 
-            #~ self.stats.update({self.time: count_peer_types()})
-            #~ 
-            #~ return True
-        #~ return False
-        
-    ## Returns True when there are peers left without a file
-
-
-    #~ def start_download(peer):
-        #~ if test_data(peer):
-            #~ downloader = self.empty_peer.pop()
-            #~ downloader.download(peer)
-            #~ self.working_peers.append(downloader)
-        #~ 
-            #~ if downloader.data.content == 'bad':
-                #~ self.bad_peers.append(downloader)
-            #~ else
-                #~ self.good_peers.append(downloader)
-            #~ return True
-        #~ return False
         
     def do_step(self):
         if self.empty_peers:
